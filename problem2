@@ -1,0 +1,27 @@
+x<-read.table("C://Users/Shahjaman/Desktop/401/companies.txt",header=T)
+#a)
+pairs(x)
+#b)
+x1<-x[,1:2]
+mean<-colMeans(x1)
+S <- cov(x1)
+r12<-cor(x1)
+
+#c)
+par(mfrow=c(1,2))
+
+qqnorm(x[,1])
+qqnorm(x[,2])#Q-Q plot
+
+#d
+D2 <- mahalanobis(x1, colMeans(x1), S)
+
+#f
+qqplot(qchisq(ppoints(10), df = 2), D2)
+
+#e
+critno<-length(D2[D2 < qchisq(ppoints(10), df = 2)])
+percentage<-critno*100/10
+
+
+

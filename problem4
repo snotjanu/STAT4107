@@ -1,0 +1,67 @@
+library(MASS)
+?lda
+
+x<-read.table("hemophilia.txt",header=F)
+
+x1<-x[which(x[,1]==1),2:3]
+x2<-x[which(x[,1]==2),2:3]
+N1<-30
+N2<-45
+
+mu1Est= colMeans(x1); mu2Est=colMeans(x2);
+S1= cov(x1); S2=cov(x2);
+## LDA (Linear Discriminant Analysis)
+    Sigma    = ((N1-1)*S1 + (N2-1)*S2)/(N1+N2-2);
+    Linear   = solve(Sigma)%*%(mu1Est-mu2Est);
+    Constant = as.vector(1/2*(mu1Est+mu2Est)%*%Linear);
+    ScoresTr = as.vector(x[,2:3]*Linear) - Constant ;#W(x)
+    ScoresTest  = as.vector(DataTest[,1:p]%*%Linear) - Constant; #W(x)
+
+
+TrainGroups<-c(1,2)
+tt<-x[,2:3]
+ 
+testlda<-lda( tt,TrainGroups,prior =0.5,method=mle)
+
+#a)
+pairs(x)
+#b)
+x1<-x[,1:2]
+mean<-colMeans(x1)
+S <- cov(x1)
+r12<-cor(x1)
+
+#c)
+par(mfrow=c(1,2))
+
+qqnorm(x[,1])
+qqnorm(x[,2])#Q-Q plot
+
+#d
+D2 <- mahalanobis(x1, colMeans(x1), S)
+
+#f
+qqplot(qchisq(ppoints(10), df = 2), D2)
+
+#e
+critno<-length(D2[D2 < qchisq(ppoints(10), df = 2)])
+percentage<-critno*100/10
+
+
+
+####test####
+
+
+
+DataTr<-read.csv('2010.csv',header=T)
+DataTr
+DataTest<-DataTr[,-6]
+DataTest
+TrainGroups <- factor(DataTr[,dim(DataTr)[2]])
+TrainGroups
+ThetaEst <- lda(DataTr[,1:5] ,TrainGroups, method='mle')
+ThetaEst
+Train.Result<-as.numeric(predict(ThetaEst,DataTest)$class)
+Train.Result
+Train.Error<- mean(Train.Result!=TrainGroups)
+Train.Error

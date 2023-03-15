@@ -1,0 +1,13 @@
+x<-read.table("C://Users/Shahjaman/Desktop/401/sweat.txt",header=T)
+N<-dim(x)[1]
+Xbar<-colMeans(x)
+Mu0<-c(4,50,10)
+S<-cov(x)
+Sinv <- solve(S) 
+Tsquare  <- N*t(Xbar-Mu0)%*%Sinv%*%(Xbar-Mu0)
+alpha<-0.10
+p<-dim(S)[1]
+Fo <- qf(alpha, df1=p, df2=N-p, lower.tail = FALSE)
+T02<-((N-1)*p)*Fo/(N-p)
+
+Tsquare<T02
